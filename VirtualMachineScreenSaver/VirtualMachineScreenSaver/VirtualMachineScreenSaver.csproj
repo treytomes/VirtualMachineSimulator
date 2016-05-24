@@ -75,10 +75,12 @@
     <Compile Include="Rendering\VertexBufferTessellator.cs" />
     <Compile Include="Rendering\ViewCamera.cs" />
     <Compile Include="Rendering\Viewport.cs" />
+    <Compile Include="Simulation\Cell.cs" />
     <Compile Include="Simulation\EffectBase.cs" />
     <Compile Include="Simulation\FallForwardEffect.cs" />
     <Compile Include="Simulation\FallReverseEffect.cs" />
     <Compile Include="Simulation\MemoryTileSet.cs" />
+    <Compile Include="Simulation\Operations.cs" />
     <Compile Include="Simulation\PulseEffect.cs" />
     <Compile Include="Simulation\AppSettings.cs" />
     <Compile Include="Simulation\Simulator.cs" />

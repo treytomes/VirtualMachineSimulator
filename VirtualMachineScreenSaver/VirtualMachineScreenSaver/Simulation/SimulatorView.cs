@@ -61,17 +61,17 @@ namespace VirtualMachineScreenSaver.Simulation
 				{
 					for (var x = 0; x < sim.Columns; x++, index++)
 					{
-						var tileIndex = MemoryTileSet.GetTileIndex(sim[index].op, sim[index].modified);
+						var tileIndex = MemoryTileSet.GetTileIndex(sim[index].Op, sim[index].Modified);
 
 						_tessellator.PushTransform();
 						_tessellator.Translate(x * _tiles.Width, y * _tiles.Height);
 						_tiles.Render(_tessellator, tileIndex);
 						_tessellator.PopTransform();
 
-						if (sim[index].modified > 0)
+						if (sim[index].Modified > 0)
 						{
 							var cell = sim[index];
-							cell.modified--;
+							cell.Modified--;
 							sim[index] = cell;
 						}
 					}

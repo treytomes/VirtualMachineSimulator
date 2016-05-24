@@ -11,7 +11,7 @@ namespace VirtualMachineScreenSaver.Simulation
 
 		public override void Apply(Simulator sim, ITessellator tessellator, MemoryTileSet tiles)
 		{
-			var tileIndex = MemoryTileSet.GetTileIndex(sim[InstructionPointer].op, 1);
+			var tileIndex = MemoryTileSet.GetTileIndex(sim[InstructionPointer].Op, 1);
 			var blend = 1.0f - (Progress / (float)LifeSpan);
 
 			var x = InstructionPointer % sim.Columns;

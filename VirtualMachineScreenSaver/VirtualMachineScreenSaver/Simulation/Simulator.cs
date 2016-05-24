@@ -4,20 +4,7 @@ using System.Linq;
 
 namespace VirtualMachineScreenSaver.Simulation
 {
-	public enum Operations
-	{
-		OP_COPY = 1,
-		OP_HALT = 2,
-		OP_SPAWN = 3,
-		OP_PUSH = char.MaxValue / 2
-	}
 
-	public struct Cell
-	{
-		public char op;
-		public int modified;
-		public int lifespan;
-	}
 
 	public class Simulator
 	{
@@ -178,8 +165,7 @@ namespace VirtualMachineScreenSaver.Simulation
 				thread.Age++;
 
 				// Get current operator.
-				var curIP = thread.InstructionPointer;
-				var op = _memory[curIP].op;
+				byte op = _memory[thread.InstructionPointer].Op;
 
 				// Move instruction pointer.
 				thread.InstructionPointer += thread.IsReversed ? -1 : 1;
@@ -187,12 +173,11 @@ namespace VirtualMachineScreenSaver.Simulation
 				// Wrap around the edge of memory.
 				thread.InstructionPointer = (thread.InstructionPointer + _memory.Length) % _memory.Length;
 
-				int arg = 0;
 				// Handle the operator.
 				switch (op)
 				{
 					// Performs a copy.
-					case (char)Operations.OP_COPY:
+					case (byte)Operations.COPY:
 						if (!ExecuteCOPY(thread))
 						{
 							index--;
@@ -200,13 +185,13 @@ namespace VirtualMachineScreenSaver.Simulation
 						break;
 
 					// Halt the current thread.
-					case (char)Operations.OP_HALT:
+					case (byte)Operations.HALT:
 						KillThread(thread);
 						index--;
 						break;
 
 					// Spawn a new thread.
-					case (char)Operations.OP_SPAWN:
+					case (byte)Operations.SPAWN:
 						if (!ExecuteSPAWN(thread))
 						{
 							index--;
@@ -215,9 +200,9 @@ namespace VirtualMachineScreenSaver.Simulation
 
 					// Push a value onto the stack.
 					default:
-						arg = op - (char)Operations.OP_PUSH;
+						var pushValue = op - (byte)Operations.PUSH;
 						// Push the argument on the stack, halt if the stack is full.
-						if (Push(thread, arg) == ERROR_VALUE)
+						if (Push(thread, pushValue) == ERROR_VALUE)
 						{
 							KillThread(thread);
 							index--;
@@ -240,7 +225,7 @@ namespace VirtualMachineScreenSaver.Simulation
 
 			foreach (var thread in _threads)
 			{
-				_memory[thread.InstructionPointer].modified = 2;
+				_memory[thread.InstructionPointer].Modified = 2;
 			}
 		}
 
@@ -281,8 +266,8 @@ namespace VirtualMachineScreenSaver.Simulation
 				for (var copyIndex = 0; copyIndex < copyLength; copyIndex++)
 				{
 					var offset = copyIndex * direction + _memory.Length;
-					var destinationOp = _memory[(destinationIP + offset) % _memory.Length].op;
-					var sourceOp = _memory[(sourceIP + offset) % _memory.Length].op;
+					var destinationOp = _memory[(destinationIP + offset) % _memory.Length].Op;
+					var sourceOp = _memory[(sourceIP + offset) % _memory.Length].Op;
 
 					SetOperator((destinationIP + offset) % _memory.Length, sourceOp);
 
@@ -293,7 +278,7 @@ namespace VirtualMachineScreenSaver.Simulation
 
 					if (destinationOp != sourceOp)
 					{
-						_memory[(destinationIP + offset) % _memory.Length].modified = 1;
+						_memory[(destinationIP + offset) % _memory.Length].Modified = 1;
 						IsDirty = true;
 					}
 				}
@@ -321,12 +306,12 @@ namespace VirtualMachineScreenSaver.Simulation
 				offset = (thread.InstructionPointer + offset + _memory.Length) % _memory.Length;
 
 				// Begin execution of the new thread.
-				if (_memory[thread.InstructionPointer].lifespan > 0)
+				if (_memory[thread.InstructionPointer].Lifespan > 0)
 				{
-					_memory[thread.InstructionPointer].lifespan--;
-					if (_memory[thread.InstructionPointer].lifespan <= 0)
+					_memory[thread.InstructionPointer].Lifespan--;
+					if (_memory[thread.InstructionPointer].Lifespan <= 0)
 					{
-						SetOperator(thread.InstructionPointer, (char)Operations.OP_HALT);
+						SetOperator(thread.InstructionPointer, (byte)Operations.HALT);
 						if (AppSettings.Instance.UseSpawnExpireEffect)
 						{
 							AddEffect(new ZoomEffect(thread.InstructionPointer));
@@ -350,7 +335,7 @@ namespace VirtualMachineScreenSaver.Simulation
 		{
 			for (var index = 0; index < _memory.Length; index++)
 			{
-				SetOperator(index, (char)Operations.OP_HALT);
+				SetOperator(index, (byte)Operations.HALT);
 			}
 		}
 
@@ -364,33 +349,33 @@ namespace VirtualMachineScreenSaver.Simulation
 			var slice = _random.Next(TotalSlice);
 			if (slice < AppSettings.Instance.CopySlice)
 			{
-				SetOperator(cellIndex, (char)Operations.OP_COPY);
+				SetOperator(cellIndex, (byte)Operations.COPY);
 			}
 			else if ((slice -= AppSettings.Instance.CopySlice) < AppSettings.Instance.HaltSlice)
 			{
-				SetOperator(cellIndex, (char)Operations.OP_HALT);
+				SetOperator(cellIndex, (byte)Operations.HALT);
 			}
 			else if (slice - AppSettings.Instance.HaltSlice < AppSettings.Instance.PushSlice)
 			{
-				SetOperator(cellIndex, (char)(Operations.OP_PUSH + 11 - _random.Next(23)));
+				SetOperator(cellIndex, (byte)(Operations.PUSH + 11 - _random.Next(23)));
 			}
 			else
 			{
-				SetOperator(cellIndex, (char)Operations.OP_SPAWN);
+				SetOperator(cellIndex, (byte)Operations.SPAWN);
 			}
 		}
 
-		private void SetOperator(int index, char op)
+		private void SetOperator(int index, byte op)
 		{
-			_memory[index].op = op;
-			_memory[index].modified = 1;
-			if (op == (char)Operations.OP_SPAWN)
+			_memory[index].Op = op;
+			_memory[index].Modified = 1;
+			if (op == (byte)Operations.SPAWN)
 			{
-				_memory[index].lifespan = AppSettings.Instance.SpawnLifeSpan;
+				_memory[index].Lifespan = AppSettings.Instance.SpawnLifeSpan;
 			}
 			else
 			{
-				_memory[index].lifespan = 0;
+				_memory[index].Lifespan = 0;
 			}
 
 			IsDirty = true;

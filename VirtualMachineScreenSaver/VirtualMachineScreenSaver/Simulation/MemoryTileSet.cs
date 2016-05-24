@@ -21,17 +21,17 @@ namespace VirtualMachineScreenSaver.Simulation
 
 			switch (op)
 			{
-				case (int)Operations.OP_COPY:
+				case (int)Operations.COPY:
 					row = 12;
 					break;
-				case (int)Operations.OP_SPAWN:
+				case (int)Operations.SPAWN:
 					row = 14;
 					break;
-				case (int)Operations.OP_HALT:
+				case (int)Operations.HALT:
 					row = 15;
 					break;
 				default:
-					row = op - (int)Operations.OP_PUSH;
+					row = op - (int)Operations.PUSH;
 					if (row < 0)
 					{
 						row *= -1;
