@@ -367,16 +367,14 @@ namespace VirtualMachineScreenSaver.Simulation
 
 		private void SetOperator(int index, byte op)
 		{
+			if (_memory[index] == null)
+			{
+				_memory[index] = new Cell();
+			}
+
 			_memory[index].Op = op;
 			_memory[index].Modified = 1;
-			if (op == (byte)Operations.SPAWN)
-			{
-				_memory[index].Lifespan = AppSettings.Instance.SpawnLifeSpan;
-			}
-			else
-			{
-				_memory[index].Lifespan = 0;
-			}
+			_memory[index].Lifespan = (op == (byte)Operations.SPAWN) ? AppSettings.Instance.SpawnLifeSpan : 0;
 
 			IsDirty = true;
 		}

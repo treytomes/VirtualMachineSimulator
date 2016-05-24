@@ -3,13 +3,16 @@
 	/// <summary>
 	/// A single cell of memory.
 	/// </summary>
-	public struct Cell
+	public class Cell
 	{
 		/// <summary>
 		/// The operation code.
 		/// </summary>
 		public byte Op;
 
+		/// <summary>
+		/// Was this cell modified?  0 = not modified; higher numbers will leave the cell highlighted longer.
+		/// </summary>
 		public int Modified;
 
 		/// <summary>

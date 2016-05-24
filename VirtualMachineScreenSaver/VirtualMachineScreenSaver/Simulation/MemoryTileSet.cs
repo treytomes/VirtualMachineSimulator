@@ -31,6 +31,9 @@ namespace VirtualMachineScreenSaver.Simulation
 					row = 15;
 					break;
 				default:
+					// Push operations are rendered using the number tiles.
+					// The first column is positive number; the second column is negative.
+
 					row = op - (int)Operations.PUSH;
 					if (row < 0)
 					{
@@ -42,6 +45,7 @@ namespace VirtualMachineScreenSaver.Simulation
 
 			if (modified == 0)
 			{
+				// Use the darker tiles if the cell has not been modified.
 				column += 2;
 			}
 
