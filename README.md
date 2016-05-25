@@ -10,6 +10,10 @@ The Rendering namespace handles the graphics.  I pulled this code from my ASCIIW
 
 The Extended ASCII font images are included for a later date when I allow switching out the default tileset for an ASCII tileset.  Please send me an e-mail if you manage to improve this code in any way!
 
+You can download the Windows executable here: [download]
+
 ~Trey Tomes (trey.tomes@gmail.com)
 
 ![alt tag](https://raw.githubusercontent.com/treytomes/VirtualMachineSimulator/master/media/screenshot01.png)
+
+[download]: https://github.com/treytomes/VirtualMachineSimulator/raw/master/builds/VirtualMachineSimulator_20160525.zip
